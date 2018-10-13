@@ -1,7 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
 module Main where
 
 import           Data.ByteString.Lazy     (ByteString)
+import           Data.Text.Lazy           (pack)
+import           Data.Text.Lazy.Encoding  (encodeUtf8)
+import           Language.Haskell.TH      (runIO)
 import           Network.HTTP.Types       (status202)
 import           Network.Wai              (Application, Request (..),
                                            responseLBS)
@@ -25,8 +29,9 @@ server req respond =
       [("Content-Type", "text/html")]
       indexHtml
 
+
 mainJs :: ByteString
-mainJs = "main.js"
+mainJs = (encodeUtf8 . pack) $([|"main.js"|])
 
 indexHtml :: ByteString
-indexHtml = "index.html"
+indexHtml = (encodeUtf8 . pack) $([|"index.html"|])
