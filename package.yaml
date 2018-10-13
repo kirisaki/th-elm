@@ -1,0 +1,27 @@
+name:                th-elm
+version:             0.1.0.0
+github:              "kirisaki/th-elm"
+license:             BSD3
+author:              "Akihito KIRISAKI"
+maintainer:          "kirisaki@klaraworks.net"
+copyright:           "Copyright: (c) 2018 Akihito KIRISAKI"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+description:         Please see the README on GitHub at <https://github.com/kirisaki/th-elm#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+executables:
+  th-elm:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - th-elm
