@@ -2,7 +2,7 @@
 {-# LANGUAGE TemplateHaskell   #-}
 module Main where
 
-import           TH                       (loadFile)
+import           TH                       (build, loadFile)
 
 import           Data.ByteString.Lazy     (ByteString)
 import           Data.Text.Lazy           (pack)
@@ -19,7 +19,8 @@ main = do
   run 8000 server
 
 server :: Application
-server req respond =
+server req respond = do
+  $(build)
   case pathInfo req of
     ["main.js"] ->
       respond $ responseLBS
