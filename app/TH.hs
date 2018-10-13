@@ -1,19 +1,29 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell   #-}
 module TH where
 
+import           Control.Lens               ((^.))
 import           Control.Monad              (sequence)
+import           Data.Aeson                 (Result (..), Value, fromJSON)
+import           Data.Aeson.Lens            (key, _Array)
+import           Data.Text                  (Text, isPrefixOf, unpack)
+import           Data.Vector                (toList)
+import           Data.Yaml                  (decodeFileThrow)
 import           Language.Haskell.TH.Syntax (Exp, Q, addDependentFile, runIO)
-import           System.Directory           (getCurrentDirectory, listDirectory)
 
 loadFile :: FilePath -> Q Exp
 loadFile path = do
-  list <- runIO $ listDirectory =<< getCurrentDirectory
-  mapM_ addDependentFile list
-  runIO $ appendFile "hoge.txt" (path ++ "\n")
   str <- runIO $ readFile path
   [| str |]
 
 build :: Q Exp
 build = do
-  runIO $ appendFile "hoge.txt" "<build>\n"
+  y <- decodeFileThrow "package.yaml" :: Q Value
+  let deps =
+        map unpack .
+        filter (isPrefixOf "client") .
+        (\(Success t) -> t) .
+        mapM fromJSON .
+        toList $ y ^. key "extra-source-files" ._Array
+  mapM_ addDependentFile deps
   [| return () |]
