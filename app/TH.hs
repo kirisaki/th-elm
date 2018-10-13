@@ -10,6 +10,8 @@ import           Data.Text                  (Text, isPrefixOf, unpack)
 import           Data.Vector                (toList)
 import           Data.Yaml                  (decodeFileThrow)
 import           Language.Haskell.TH.Syntax (Exp, Q, addDependentFile, runIO)
+import           System.Directory           (setCurrentDirectory)
+import           System.Process             (callCommand)
 
 loadFile :: FilePath -> Q Exp
 loadFile path = do
@@ -18,6 +20,7 @@ loadFile path = do
 
 build :: Q Exp
 build = do
+  addDependentFile "package.yaml"
   y <- decodeFileThrow "package.yaml" :: Q Value
   let deps =
         map unpack .
@@ -26,4 +29,7 @@ build = do
         mapM fromJSON .
         toList $ y ^. key "extra-source-files" ._Array
   mapM_ addDependentFile deps
+  runIO $ setCurrentDirectory "client"
+  runIO $ callCommand "yarn run webpack"
+  runIO $ setCurrentDirectory ".."
   [| return () |]
