@@ -14,6 +14,10 @@ description:         Please see the README on GitHub at <https://github.com/kiri
 
 dependencies:
 - base >= 4.7 && < 5
+- bytestring
+- http-types
+- wai
+- warp
 
 executables:
   th-elm:
@@ -23,5 +27,4 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    dependencies:
-    - th-elm
+
